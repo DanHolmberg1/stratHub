@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block title %}Delete {{ what }}{% endblock %}
+{% block content %}
+<div class="card" style="max-width:520px">
+  <h1>Delete {{ what }}?</h1>
+  <p>“{{ obj }}” will be permanently deleted{% if what == 'opponent' %}, including all notes about them{% endif %}. This can't be undone.</p>
+  <form method="post">{% csrf_token %}<button class="danger">Yes, delete</button> <a class="btn" href="{{ obj.get_absolute_url }}">Cancel</a></form>
+</div>
+{% endblock %}

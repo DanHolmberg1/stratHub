@@ -1,0 +1,13 @@
+<div class="card" id="comments">
+  <h2>Comments ({{ comments|length }})</h2>
+  {% for c in comments %}
+  <div class="comment">
+    <span class="who">{{ c.author.username|default:"deleted user" }}</span><span class="when">{{ c.created_at|timesince }} ago</span>
+    {% if c.author_id == user.id or user.is_staff %}
+    <form method="post" action="{% url 'comment_delete' c.pk %}" class="inline-form" data-confirm="Delete this comment?">{% csrf_token %}<button class="link small">delete</button></form>
+    {% endif %}
+    <div class="pre">{{ c.body }}</div>
+  </div>
+  {% empty %}<p class="muted small">No comments yet.</p>{% endfor %}
+  <form method="post" style="margin-top:10px">{% csrf_token %}{{ comment_form.body }}<div style="margin-top:6px"><button class="primary sm">Comment</button></div></form>
+</div>

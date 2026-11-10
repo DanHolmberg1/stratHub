@@ -1,0 +1,6 @@
+{% load book_extras %}{% if obj.video_file %}
+<div class="video"><video src="{{ obj.video_file.url }}" controls preload="metadata" playsinline></video></div>
+{% elif obj.video_url %}{% with src=obj.video_url|embed %}{% if src %}
+<div class="video"><iframe src="{{ src }}" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+{% else %}<p><a href="{{ obj.video_url }}" target="_blank" rel="noopener noreferrer">Open video ↗</a></p>{% endif %}{% endwith %}
+{% endif %}

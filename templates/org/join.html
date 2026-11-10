@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block title %}Join{% endblock %}
+{% block content %}
+<div class="login card">
+  <span class="brand">strat<span>Hub</span></span>
+  {% if expired %}
+    <p>This invite link has expired or was already used. Ask an org admin for a new one.</p>
+  {% else %}
+    <p class="muted">Create your account{% if invite.teams.exists %} to join {{ invite.teams.all|join:", " }}{% endif %}.</p>
+    <form method="post">{% csrf_token %}{% for field in form %}{% include "_field.html" %}{% endfor %}
+      <button class="primary" style="width:100%;justify-content:center">Create account</button></form>
+  {% endif %}
+</div>
+{% endblock %}

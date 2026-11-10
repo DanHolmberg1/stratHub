@@ -1,0 +1,36 @@
+{% extends "base.html" %}{% load static %}{% block title %}{{ map.name }} utility{% endblock %}
+{% block content %}
+{% include "_map_tabs.html" %}
+<div class="filters card">
+  <div class="row"><span class="lbl">Side</span>
+    <div class="chips">
+      <button type="button" class="chip" data-filter="side" data-value="T"><span class="dot" style="background:var(--t)"></span>T</button>
+      <button type="button" class="chip" data-filter="side" data-value="CT"><span class="dot" style="background:var(--ct)"></span>CT</button>
+    </div>
+  </div>
+  <div class="row"><span class="lbl">Util</span>
+    <div class="chips">{% for key, label in nades %}
+      <button type="button" class="chip" data-filter="nade" data-value="{{ key }}"><span class="dot nade nade-{{ key }}"></span>{{ label }}</button>
+    {% endfor %}</div>
+    <span class="muted small">Shift-click = only that one</span>
+  </div>
+  <div class="row">
+    <input type="search" id="q" placeholder="Search title, callout, tag…" style="max-width:320px">
+    <label class="small" style="display:flex;gap:6px;align-items:center;font-weight:400;margin:0"><input type="checkbox" id="paths"> Show throw lines</label>
+    <button type="button" class="sm" id="reset">Reset filters</button>
+    <span class="muted small" style="margin-left:auto"><span id="lu-count"></span> lineups</span>
+  </div>
+</div>
+<div class="split">
+  <div>
+    <div class="layer-tabs" id="layers"></div>
+    <div class="radar-wrap" id="radar"></div>
+  </div>
+  <div class="panel-sticky">
+    <div class="card" id="panel"></div>
+    <div class="card"><div class="lu-list" id="lu-list"></div></div>
+  </div>
+</div>
+{{ data|json_script:"page-data" }}
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/mapview.js' %}"></script>{% endblock %}

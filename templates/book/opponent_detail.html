@@ -1,0 +1,42 @@
+{% extends "base.html" %}{% block title %}{{ opponent.name }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{{ opponent.name }}</h1>{% if opponent.shared %}<span class="badge shared">shared</span>{% endif %}
+  <div class="actions">
+    <a class="btn" href="{% url 'gameplan_create' %}?opponent={{ opponent.pk }}">+ Gameplan vs {{ opponent.name }}</a>
+    {% if can_edit %}<a class="btn" href="{% url 'opponent_edit' opponent.pk %}">Edit</a><a class="btn danger" href="{% url 'opponent_delete' opponent.pk %}">Delete</a>{% endif %}
+  </div>
+</div>
+<div class="split">
+  <div>
+    {% if opponent.notes %}<div class="card"><h2>General</h2><div class="pre">{{ opponent.notes }}</div></div>{% endif %}
+    <div class="card">
+      <h2>Notes</h2>
+      <div class="chips" style="margin-bottom:10px">
+        <a class="chip {% if not map_filter %}on{% endif %}" href="?">All maps</a>
+        {% for m in maps %}<a class="chip {% if map_filter == m.slug %}on{% endif %}" href="?map={{ m.slug }}">{{ m.name }}</a>{% endfor %}
+      </div>
+      {% for n in entries %}
+      <div class="comment">
+        {% if n.map %}<span class="badge">{{ n.map }}</span>{% endif %} {% if n.side %}<span class="badge {{ n.side }}">their {{ n.side }}</span>{% endif %}
+        <span class="when">{{ n.author.username|default:"?" }} · {{ n.created_at|date:"j M Y" }}</span>
+        {% if n.author_id == user.id or can_edit %}<form method="post" action="{% url 'opponent_note_delete' n.pk %}" class="inline-form" data-confirm="Delete this note?">{% csrf_token %}<button class="link small">delete</button></form>{% endif %}
+        <div class="pre">{{ n.body }}</div>
+      </div>
+      {% empty %}<p class="muted small">No notes{% if map_filter %} for this map{% endif %} yet.</p>{% endfor %}
+    </div>
+  </div>
+  <div>
+    <div class="card"><h2>Add note</h2>
+      <form method="post">{% csrf_token %}
+        <div class="form-row">{% include "_field.html" with field=form.map %}{% include "_field.html" with field=form.side %}</div>
+        {% include "_field.html" with field=form.body %}
+        <button class="primary">Add note</button>
+      </form>
+    </div>
+    <div class="card"><h2>Gameplans</h2>
+      <ul class="list">{% for g in gameplans %}<li><a href="{{ g.get_absolute_url }}">{{ g.title }}</a><span class="muted small">{{ g.match_date|date:"j M Y" }}</span></li>{% empty %}<li class="muted small">None yet.</li>{% endfor %}</ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

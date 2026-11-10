@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block title %}Opponents{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Opponents</h1><div class="actions"><a class="btn primary" href="{% url 'opponent_create' %}">+ Add opponent</a></div></div>
+{% if opponents %}
+<div class="card" style="padding:0"><table>
+  <thead><tr><th>Team</th><th>Notes</th><th>Added by</th></tr></thead>
+  <tbody>{% for o in opponents %}<tr><td><a href="{{ o.get_absolute_url }}"><b>{{ o.name }}</b></a></td><td>{{ o.n_notes }}</td><td class="small">{{ o.team }}{% if o.shared %} <span class="badge shared">shared</span>{% endif %}</td></tr>{% endfor %}</tbody>
+</table></div>
+{% else %}<div class="empty">No opponents yet. Add teams you play against and keep anti-strat notes per map.</div>{% endif %}
+{% endblock %}

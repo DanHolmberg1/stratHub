@@ -1,0 +1,43 @@
+{% extends "base.html" %}{% block title %}Maps{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Active duty</h1></div>
+<div class="maps">
+  {% for m in active_maps %}
+  {% with layer=m.layers.first %}
+  <a class="map-tile" href="{% url 'map_detail' m.slug %}">
+    <div class="thumb" {% if layer.radar %}style="background-image:url('{{ layer.radar.url }}')"{% endif %}>{% if not layer.radar %}{{ m.name|slice:":1" }}{% endif %}</div>
+    <div class="meta"><b>{{ m.name }}</b><span class="muted small">{{ m.n_lineups }} lineup{{ m.n_lineups|pluralize }} · {{ m.n_strats }} strat{{ m.n_strats|pluralize }}</span></div>
+  </a>
+  {% endwith %}
+  {% empty %}<div class="empty">No active maps. An org admin can run <code>manage.py seed_maps</code> or add maps in Admin.</div>{% endfor %}
+</div>
+
+<div class="grid cols-2" style="margin-top:24px">
+  <div class="card">
+    <h2>Recently updated strats</h2>
+    <ul class="list">{% for s in recent_strats %}
+      <li><span class="badge {{ s.side }}">{{ s.side }}</span><a href="{{ s.get_absolute_url }}">{{ s.title }}</a><span class="muted small">{{ s.map }} · {{ s.get_kind_display }} · {{ s.updated_at|timesince }} ago</span></li>
+    {% empty %}<li class="muted">Nothing yet.</li>{% endfor %}</ul>
+  </div>
+  <div class="card">
+    <h2>Recently updated lineups</h2>
+    <ul class="list">{% for l in recent_lineups %}
+      <li><span class="badge nade nade-{{ l.nade }}">{{ l.get_nade_display }}</span><span class="badge {{ l.side }}">{{ l.side }}</span><a href="{{ l.get_absolute_url }}">{{ l.title }}</a><span class="muted small">{{ l.map }}</span></li>
+    {% empty %}<li class="muted">Nothing yet.</li>{% endfor %}</ul>
+  </div>
+  <div class="card">
+    <h2>Upcoming matches</h2>
+    <ul class="list">{% for p in upcoming %}
+      <li><a href="{{ p.get_absolute_url }}">{{ p.title }}</a><span class="muted small">{{ p.match_date|date:"D j M" }}{% if p.opponent %} · vs {{ p.opponent }}{% endif %}</span></li>
+    {% empty %}<li class="muted">No gameplans with an upcoming date. <a href="{% url 'gameplan_create' %}">Make one</a></li>{% endfor %}</ul>
+  </div>
+</div>
+
+{% if archived_maps %}
+<details style="margin-top:24px"><summary class="muted">Archived maps ({{ archived_maps|length }}): content is kept for when they come back</summary>
+  <div class="maps" style="margin-top:12px">{% for m in archived_maps %}
+    <a class="map-tile archived" href="{% url 'map_detail' m.slug %}"><div class="meta"><b>{{ m.name }}</b><span class="muted small">{{ m.n_lineups }} lineups · {{ m.n_strats }} strats</span></div></a>
+  {% endfor %}</div>
+</details>
+{% endif %}
+{% endblock %}

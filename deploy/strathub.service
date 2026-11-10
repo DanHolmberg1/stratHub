@@ -1,0 +1,16 @@
+# /etc/systemd/system/strathub.service
+[Unit]
+Description=stratHub (gunicorn)
+After=network.target
+
+[Service]
+User=strathub
+Group=strathub
+WorkingDirectory=/srv/strathub/app
+EnvironmentFile=/etc/strathub.env
+ExecStart=/srv/strathub/app/.venv/bin/gunicorn strathub.wsgi:application \
+    --bind 127.0.0.1:8000 --workers 3 --threads 4 --timeout 300
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

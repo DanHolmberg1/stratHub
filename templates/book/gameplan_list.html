@@ -1,0 +1,15 @@
+{% extends "base.html" %}{% block title %}Gameplans{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Gameplans</h1><div class="actions"><a class="btn primary" href="{% url 'gameplan_create' %}">+ New gameplan</a></div></div>
+<p class="muted">Pick the strats you're bringing to a match. Gameplans are private to your team.</p>
+<div class="card"><h2>Upcoming / undated</h2>
+  <ul class="list">{% for p in upcoming %}
+    <li><a href="{{ p.get_absolute_url }}"><b>{{ p.title }}</b></a><span class="muted small">{% if p.match_date %}{{ p.match_date|date:"D j M Y" }}{% else %}no date{% endif %}{% if p.opponent %} · vs {{ p.opponent }}{% endif %} · {{ p.n }} strat{{ p.n|pluralize }} · {{ p.team }}</span></li>
+  {% empty %}<li class="muted">None.</li>{% endfor %}</ul>
+</div>
+{% if past %}<div class="card"><h2>Past</h2>
+  <ul class="list">{% for p in past %}
+    <li><a href="{{ p.get_absolute_url }}">{{ p.title }}</a><span class="muted small">{{ p.match_date|date:"j M Y" }}{% if p.opponent %} · vs {{ p.opponent }}{% endif %} · {{ p.n }} strats</span></li>
+  {% endfor %}</ul>
+</div>{% endif %}
+{% endblock %}

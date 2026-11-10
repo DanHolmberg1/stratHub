@@ -1,0 +1,33 @@
+{% extends "base.html" %}{% block title %}{% if plan %}Edit gameplan{% else %}New gameplan{% endif %}{% endblock %}
+{% block content %}
+<div class="page-head"><h1>{% if plan %}Edit “{{ plan.title }}”{% else %}New gameplan{% endif %}</h1></div>
+<form method="post">{% csrf_token %}
+<div class="split">
+  <div class="card">
+    <h2>Strats</h2>
+    <input type="search" data-filter-for="strat-pick" placeholder="Filter strats…" style="margin-bottom:10px">
+    <div id="strat-pick">
+    {% for m, strats in strat_groups %}
+      <fieldset><legend>{{ m.name }}</legend>
+      {% for s in strats %}
+        <label data-filter-text="{{ m.name }} {{ s.title }} {{ s.side }} {{ s.get_kind_display }} {{ s.area }} {{ s.tags }}" style="font-weight:400;display:flex;gap:8px;align-items:center">
+          <input type="checkbox" name="strats" value="{{ s.pk }}" {% if s.pk in selected %}checked{% endif %}>
+          <span class="badge {{ s.side }}">{{ s.side }}</span> {{ s.title }} <span class="muted small">{{ s.get_kind_display }}{% if s.area %} · {{ s.area }}{% endif %}</span>
+        </label>
+      {% endfor %}
+      </fieldset>
+    {% empty %}<p class="muted">No strats yet.</p>{% endfor %}
+    </div>
+    {{ form.strats.errors }}
+  </div>
+  <div class="card">
+    {% include "_field.html" with field=form.title %}
+    {% include "_field.html" with field=form.team %}
+    <div class="form-row">{% include "_field.html" with field=form.opponent %}{% include "_field.html" with field=form.match_date %}</div>
+    {% include "_field.html" with field=form.notes %}
+    <button class="primary">Save gameplan</button>
+    <a class="btn" href="{% if plan %}{{ plan.get_absolute_url }}{% else %}{% url 'gameplan_list' %}{% endif %}">Cancel</a>
+  </div>
+</div>
+</form>
+{% endblock %}

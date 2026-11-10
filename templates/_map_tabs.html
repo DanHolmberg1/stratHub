@@ -1,0 +1,11 @@
+<div class="page-head">
+  <h1>{{ map.name }}{% if not map.active %} <span class="badge">archived</span>{% endif %}</h1>
+  <div class="actions">
+    {% if tab == 'util' %}<a class="btn primary" href="{% url 'lineup_create' map.slug %}">+ Add lineup</a>
+    {% else %}<a class="btn primary" href="{% url 'strat_create' map.slug %}">+ New strat</a>{% endif %}
+  </div>
+</div>
+<div class="tabs">
+  <a href="{% url 'map_detail' map.slug %}" class="{% if tab == 'util' %}on{% endif %}">Utility</a>
+  <a href="{% url 'strat_list' map.slug %}" class="{% if tab == 'strats' %}on{% endif %}">Strats</a>
+</div>

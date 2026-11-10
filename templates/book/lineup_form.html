@@ -1,0 +1,44 @@
+{% extends "base.html" %}{% load static %}{% block title %}{% if lineup %}Edit lineup{% else %}New lineup{% endif %}{% endblock %}
+{% block content %}
+<div class="page-head"><h1>{% if lineup %}Edit “{{ lineup.title }}”{% else %}New lineup · {{ map.name }}{% endif %}</h1></div>
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+{{ form.from_x }}{{ form.from_y }}{{ form.to_x }}{{ form.to_y }}
+{% if form.non_field_errors %}<ul class="messages"><li class="error">{{ form.non_field_errors|join:" " }}</li></ul>{% endif %}
+<div class="split">
+  <div>
+    <div class="toolbar">
+      <button type="button" data-mode="from"><span class="dot" style="background:var(--t)"></span> Set throw position</button>
+      <button type="button" data-mode="to">◎ Set landing spot</button>
+      <span class="muted small" id="place-hint"></span>
+    </div>
+    <div class="radar-wrap" id="radar"></div>
+  </div>
+  <div>
+    <div class="card">
+      {% include "_field.html" with field=form.title %}
+      <div class="form-row">{% include "_field.html" with field=form.side %}{% include "_field.html" with field=form.nade %}</div>
+      {% include "_field.html" with field=form.layer %}
+      <div class="form-row">{% include "_field.html" with field=form.from_callout %}{% include "_field.html" with field=form.to_callout %}</div>
+      <div class="form-row">{% include "_field.html" with field=form.technique %}{% include "_field.html" with field=form.click %}</div>
+      {% include "_field.html" with field=form.description %}
+      {% include "_field.html" with field=form.tags %}
+    </div>
+    <div class="card">
+      <h2>Video & screenshots</h2>
+      {% include "_field.html" with field=form.video_file %}
+      {% include "_field.html" with field=form.video_url %}
+      <div class="form-row">{% include "_field.html" with field=form.pos_image %}{% include "_field.html" with field=form.aim_image %}</div>
+    </div>
+    <div class="card">
+      {% include "_field.html" with field=form.team %}
+      {% include "_field.html" with field=form.shared %}
+      <button class="primary">Save lineup</button>
+      <a class="btn" href="{% if lineup %}{{ lineup.get_absolute_url }}{% else %}{% url 'map_detail' map.slug %}{% endif %}">Cancel</a>
+    </div>
+  </div>
+</div>
+</form>
+<datalist id="callouts">{% for c in callouts %}<option value="{{ c }}">{% endfor %}</datalist>
+{{ data|json_script:"page-data" }}
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/lineup_form.js' %}"></script>{% endblock %}

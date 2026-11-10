@@ -1,0 +1,21 @@
+# /etc/caddy/Caddyfile. Caddy fetches HTTPS certificates automatically.
+strats.example.com {
+	encode zstd gzip
+
+	# Allow big video uploads (keep in sync with STRATHUB_MAX_VIDEO_MB).
+	request_body {
+		max_size 300MB
+	}
+
+	reverse_proxy 127.0.0.1:8000 {
+		# Django checks login + team access for /media/..., then answers with
+		# an X-Accel-Redirect header. Caddy serves the file itself (with
+		# seeking support) from the media folder.
+		@accel header X-Accel-Redirect *
+		handle_response @accel {
+			root * /srv/strathub/data/media
+			rewrite * {rp.header.X-Accel-Redirect}
+			file_server
+		}
+	}
+}

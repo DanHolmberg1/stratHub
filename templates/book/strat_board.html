@@ -1,0 +1,43 @@
+{% extends "base.html" %}{% load static %}{% block title %}Draw · {{ strat.title }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Draw: {{ strat.title }}</h1>
+  <div class="actions"><span class="muted small" id="save-status"></span><button class="primary" id="save" type="button">Save drawing</button><a class="btn" href="{{ strat.get_absolute_url }}">Back to strat</a></div>
+</div>
+{% csrf_token %}
+<div class="card">
+  <div class="toolbar">
+    <button type="button" data-tool="arrow" class="on" title="Movement">➜ Arrow</button>
+    <button type="button" data-tool="dashed" title="Util path / rotation">⇢ Dashed</button>
+    <button type="button" data-tool="pen">✎ Pen</button>
+    <button type="button" data-tool="circle">◯ Area</button>
+    <button type="button" data-tool="text">T Text</button>
+    <span class="sep"></span>
+    <button type="button" data-tool="player">● Player</button>
+    <button type="button" data-side="T" class="sm">T</button><button type="button" data-side="CT" class="sm">CT</button>
+    <button type="button" data-tool="enemy">✕ Enemy</button>
+    <span class="sep"></span>
+    <button type="button" data-tool="smoke"><span class="dot nade nade-smoke"></span>Smoke</button>
+    <button type="button" data-tool="flash"><span class="dot nade nade-flash"></span>Flash</button>
+    <button type="button" data-tool="molotov"><span class="dot nade nade-molotov"></span>Molly</button>
+    <button type="button" data-tool="he"><span class="dot nade nade-he"></span>HE</button>
+    <span class="sep"></span>
+    <button type="button" class="swatch on" data-color="#ffffff" aria-label="White"></button>
+    <button type="button" class="swatch" data-color="#e8a33d" aria-label="Orange"></button>
+    <button type="button" class="swatch" data-color="#4d94ea" aria-label="Blue"></button>
+    <button type="button" class="swatch" data-color="#e05252" aria-label="Red"></button>
+    <button type="button" class="swatch" data-color="#5ec46a" aria-label="Green"></button>
+    <button type="button" class="swatch" data-color="#fff06b" aria-label="Yellow"></button>
+    <span class="sep"></span>
+    <button type="button" data-tool="erase">⌫ Eraser</button>
+    <button type="button" id="undo">↶ Undo</button>
+    <button type="button" id="clear" class="danger">Clear layer</button>
+    <label class="small" style="display:flex;gap:6px;align-items:center;font-weight:400;margin:0 0 0 auto"><input type="checkbox" id="show-util" checked> Show strat util</label>
+  </div>
+  <div class="layer-tabs" id="layers"></div>
+  <div class="radar-wrap" id="radar"></div>
+  <div id="board" data-save-url="{% url 'strat_board' strat.pk %}" data-side="{{ strat.side }}"></div>
+</div>
+{{ data|json_script:"page-data" }}
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/board_editor.js' %}"></script>{% endblock %}

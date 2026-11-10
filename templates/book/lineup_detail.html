@@ -1,0 +1,44 @@
+{% extends "base.html" %}{% load static %}{% block title %}{{ lineup.title }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{{ lineup.title }}</h1>
+  <span class="badge nade nade-{{ lineup.nade }}">{{ lineup.get_nade_display }}</span><span class="badge {{ lineup.side }}">{{ lineup.side }}</span>
+  {% if lineup.shared %}<span class="badge shared">shared</span>{% endif %}
+  <div class="actions">
+    <a class="btn" href="{% url 'map_detail' map.slug %}#sel={{ lineup.pk }}{% if lineup.layer_id %}&layer={{ lineup.layer_id }}{% endif %}">← {{ map.name }} util</a>
+    {% if can_edit %}<a class="btn" href="{% url 'lineup_edit' lineup.pk %}">Edit</a><a class="btn danger" href="{% url 'lineup_delete' lineup.pk %}">Delete</a>{% endif %}
+  </div>
+</div>
+<div class="split">
+  <div>
+    {% include "_video.html" with obj=lineup %}
+    {% if not lineup.video_file and not lineup.video_url %}<div class="empty" style="margin-bottom:12px">No video yet.</div>{% endif %}
+    {% if lineup.pos_image or lineup.aim_image %}
+    <div class="shots">
+      {% if lineup.pos_image %}<figure><a href="{{ lineup.pos_image.url }}" target="_blank"><img src="{{ lineup.pos_image.url }}" alt="Position"></a><figcaption>Position</figcaption></figure>{% endif %}
+      {% if lineup.aim_image %}<figure><a href="{{ lineup.aim_image.url }}" target="_blank"><img src="{{ lineup.aim_image.url }}" alt="Aim"></a><figcaption>Aim</figcaption></figure>{% endif %}
+    </div>
+    {% endif %}
+    {% include "_comments.html" %}
+  </div>
+  <div>
+    <div class="card">
+      <dl class="facts">
+        <dt>From</dt><dd>{{ lineup.from_callout|default:"–" }}</dd>
+        <dt>Lands</dt><dd>{{ lineup.to_callout|default:"–" }}</dd>
+        <dt>Throw</dt><dd>{{ lineup.get_technique_display }} · {{ lineup.get_click_display }}</dd>
+        <dt>Team</dt><dd>{{ lineup.team }}</dd>
+        <dt>Added by</dt><dd>{{ lineup.created_by.username|default:"–" }}, {{ lineup.created_at|date:"j M Y" }}</dd>
+      </dl>
+      {% if lineup.description %}<p class="pre">{{ lineup.description }}</p>{% endif %}
+      {% if lineup.tag_list %}<div class="chips">{% for t in lineup.tag_list %}<span class="tag">{{ t }}</span>{% endfor %}</div>{% endif %}
+    </div>
+    <div class="card"><div class="radar-wrap" id="radar"></div><div id="panel" hidden></div></div>
+    <div class="card"><h2>Used in strats</h2>
+      <ul class="list">{% for s in strats %}<li><span class="badge {{ s.side }}">{{ s.side }}</span><a href="{{ s.get_absolute_url }}">{{ s.title }}</a></li>{% empty %}<li class="muted small">Not linked to any strat yet.</li>{% endfor %}</ul>
+    </div>
+  </div>
+</div>
+{{ data|json_script:"page-data" }}
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/strat_detail.js' %}"></script>{% endblock %}

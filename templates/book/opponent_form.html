@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block title %}{% if opponent %}Edit opponent{% else %}New opponent{% endif %}{% endblock %}
+{% block content %}
+<div class="card" style="max-width:640px">
+  <h1>{% if opponent %}Edit {{ opponent.name }}{% else %}New opponent{% endif %}</h1>
+  <form method="post">{% csrf_token %}{% for field in form %}{% include "_field.html" %}{% endfor %}
+    <button class="primary">Save</button> <a class="btn" href="{% if opponent %}{{ opponent.get_absolute_url }}{% else %}{% url 'opponent_list' %}{% endif %}">Cancel</a>
+  </form>
+</div>
+{% endblock %}

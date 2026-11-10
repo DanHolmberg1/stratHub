@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% block title %}Log in{% endblock %}
+{% block content %}
+<div class="login card">
+  <span class="brand">strat<span>Hub</span></span>
+  <form method="post">{% csrf_token %}
+    {% if form.non_field_errors %}<ul class="errorlist">{% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+    {% include "_field.html" with field=form.username %}
+    {% include "_field.html" with field=form.password %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <button class="primary" style="width:100%;justify-content:center">Log in</button>
+  </form>
+  <p class="muted small" style="margin-top:14px">No account? Ask an org admin for an invite link.</p>
+</div>
+{% endblock %}

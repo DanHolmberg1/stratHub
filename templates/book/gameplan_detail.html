@@ -1,0 +1,29 @@
+{% extends "base.html" %}{% block title %}{{ plan.title }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>{{ plan.title }}</h1>
+  {% if plan.match_date %}<span class="badge">{{ plan.match_date|date:"D j M Y" }}</span>{% endif %}
+  {% if plan.opponent %}<a class="badge" href="{{ plan.opponent.get_absolute_url }}">vs {{ plan.opponent }}</a>{% endif %}
+  <div class="actions">{% if can_edit %}<a class="btn" href="{% url 'gameplan_edit' plan.pk %}">Edit</a><a class="btn danger" href="{% url 'gameplan_delete' plan.pk %}">Delete</a>{% endif %}</div>
+</div>
+<div class="split">
+  <div>
+    {% if plan.notes %}<div class="card"><div class="pre">{{ plan.notes }}</div></div>{% endif %}
+    {% for m, strats in groups %}
+    <div class="card"><h2>{{ m.name }}</h2>
+      <table><tbody>{% for s in strats %}
+        <tr><td style="width:50px"><span class="badge {{ s.side }}">{{ s.side }}</span></td><td><a href="{{ s.get_absolute_url }}"><b>{{ s.title }}</b></a></td><td class="muted small">{{ s.get_kind_display }}{% if s.area %} · {{ s.area }}{% endif %}</td><td class="muted small">{{ s.n_util }} util</td></tr>
+      {% endfor %}</tbody></table>
+    </div>
+    {% empty %}<div class="empty">No strats picked yet.</div>{% endfor %}
+  </div>
+  <div>
+    {% if plan.opponent %}
+    <div class="card"><h2>Notes on {{ plan.opponent }}</h2>
+      {% if plan.opponent.notes %}<p class="pre small">{{ plan.opponent.notes }}</p>{% endif %}
+      <ul class="list">{% for n in opponent_notes %}<li><div>{% if n.map %}<span class="badge">{{ n.map }}</span> {% endif %}{% if n.side %}<span class="badge {{ n.side }}">their {{ n.side }}</span>{% endif %}<div class="pre small">{{ n.body }}</div></div></li>{% empty %}<li class="muted small">No notes yet.</li>{% endfor %}</ul>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

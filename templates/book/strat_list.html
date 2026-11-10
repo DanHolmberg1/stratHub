@@ -1,0 +1,39 @@
+{% extends "base.html" %}{% load book_extras %}{% block title %}{{ map.name }} strats{% endblock %}
+{% block content %}
+{% include "_map_tabs.html" %}
+<form method="get" class="card filters">
+  <div class="row">
+    <div class="chips">
+      <a class="chip {% if not f.side %}on{% endif %}" href="{% qs side='' %}">Both sides</a>
+      <a class="chip {% if f.side == 'T' %}on{% endif %}" href="{% qs side='T' %}"><span class="dot" style="background:var(--t)"></span>T</a>
+      <a class="chip {% if f.side == 'CT' %}on{% endif %}" href="{% qs side='CT' %}"><span class="dot" style="background:var(--ct)"></span>CT</a>
+    </div>
+    {% if f.side %}<input type="hidden" name="side" value="{{ f.side }}">{% endif %}
+    <select name="kind" data-autosubmit style="max-width:200px"><option value="">All types</option>{% for k, label in kinds %}<option value="{{ k }}" {% if f.kind == k %}selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+    <select name="status" data-autosubmit style="max-width:200px">
+      <option value="">Not retired</option>{% for k, label in statuses %}<option value="{{ k }}" {% if f.status == k %}selected{% endif %}>{{ label }}</option>{% endfor %}<option value="all" {% if f.status == 'all' %}selected{% endif %}>Everything</option>
+    </select>
+    <input type="search" name="q" value="{{ f.q }}" placeholder="Search…" style="max-width:260px">
+    <button class="sm">Filter</button>
+  </div>
+</form>
+{% if strats %}
+<div class="card" style="padding:0;overflow-x:auto">
+<table>
+  <thead><tr><th>Strat</th><th>Side</th><th>Type</th><th>Area</th><th>Status</th><th>Util</th><th>Team</th></tr></thead>
+  <tbody>{% for s in strats %}
+    <tr>
+      <td><a href="{{ s.get_absolute_url }}"><b>{{ s.title }}</b></a>{% if s.video_file or s.video_url %} <span class="muted small" title="Has video">▶</span>{% endif %}
+        {% if s.tag_list %}<div class="chips" style="margin-top:3px">{% for t in s.tag_list %}<span class="tag">{{ t }}</span>{% endfor %}</div>{% endif %}</td>
+      <td><span class="badge {{ s.side }}">{{ s.side }}</span></td>
+      <td>{{ s.get_kind_display }}</td>
+      <td>{{ s.area|default:"–" }}</td>
+      <td><span class="badge status-{{ s.status }}">{{ s.get_status_display }}</span></td>
+      <td>{{ s.n_util }}</td>
+      <td class="small">{{ s.team }}{% if s.shared %} <span class="badge shared">shared</span>{% endif %}</td>
+    </tr>
+  {% endfor %}</tbody>
+</table>
+</div>
+{% else %}<div class="empty">No strats match. <a href="{% url 'strat_create' map.slug %}">Write one</a></div>{% endif %}
+{% endblock %}

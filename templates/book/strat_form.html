@@ -1,0 +1,66 @@
+{% extends "base.html" %}{% load static %}{% block title %}{% if strat %}Edit strat{% else %}New strat{% endif %}{% endblock %}
+{% block content %}
+<div class="page-head"><h1>{% if strat %}Edit “{{ strat.title }}”{% else %}New strat · {{ map.name }}{% endif %}</h1></div>
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+{% if form.errors or form.non_field_errors %}<ul class="messages"><li class="error">Please fix the errors below.</li></ul>{% endif %}
+<div class="split">
+  <div>
+    <div class="card">
+      {% include "_field.html" with field=form.title %}
+      <div class="form-row">{% include "_field.html" with field=form.side %}{% include "_field.html" with field=form.kind %}{% include "_field.html" with field=form.area %}{% include "_field.html" with field=form.status %}</div>
+      {% include "_field.html" with field=form.description %}
+      {% include "_field.html" with field=form.tags %}
+    </div>
+    <div class="card">
+      <h2>Players</h2>
+      <p class="muted small">Fill in only the slots you need. A player's util picker shows the util ticked on the right.</p>
+      <div class="slots">
+        {% for sf in slot_forms %}
+        <div class="slot">
+          <div class="slot-head"><span class="slot-num">{{ forloop.counter }}</span>{{ sf.role }}</div>
+          {{ sf.role.errors }}
+          <div class="field"><label for="{{ sf.player.id_for_label }}">Player</label>{{ sf.player }}</div>
+          <div class="field"><label for="{{ sf.instructions.id_for_label }}">Job</label>{{ sf.instructions }}</div>
+          <div class="field"><label for="{{ sf.lineups.id_for_label }}">{{ sf.lineups.label }}</label>{{ sf.lineups }}{{ sf.lineups.errors }}<div class="help">Ctrl/Cmd-click for several</div></div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  <div>
+    <div class="card">
+      <h2>Util in this strat <span class="muted small" id="util-count"></span></h2>
+      <input type="search" id="util-q" placeholder="Filter util…" style="margin-bottom:8px">
+      <div class="chips" style="margin-bottom:8px">
+        <button type="button" class="chip" data-util-nade="smoke"><span class="dot nade nade-smoke"></span>Smoke</button>
+        <button type="button" class="chip" data-util-nade="flash"><span class="dot nade nade-flash"></span>Flash</button>
+        <button type="button" class="chip" data-util-nade="molotov"><span class="dot nade nade-molotov"></span>Molly</button>
+        <button type="button" class="chip" data-util-nade="he"><span class="dot nade nade-he"></span>HE</button>
+        <button type="button" class="chip" data-util-nade="decoy"><span class="dot nade nade-decoy"></span>Decoy</button>
+      </div>
+      <div class="util-pick" id="util-pick">
+        {% for l in util_choices %}
+        <label data-nade="{{ l.nade }}"><input type="checkbox" name="lineups" value="{{ l.pk }}" {% if l.pk in selected_util %}checked{% endif %}>
+          <span class="dot nade nade-{{ l.nade }}"></span><span class="badge {{ l.side }}">{{ l.side }}</span> {{ l.title }}{% if l.to_callout %} <span class="muted small">→ {{ l.to_callout }}</span>{% endif %}</label>
+        {% empty %}<p class="muted small">No lineups on {{ map.name }} yet. <a href="{% url 'lineup_create' map.slug %}" target="_blank">Add one</a> and reload.</p>{% endfor %}
+      </div>
+      {{ form.lineups.errors }}
+    </div>
+    <div class="card">
+      <h2>Round video</h2>
+      {% include "_field.html" with field=form.video_file %}
+      {% include "_field.html" with field=form.video_url %}
+    </div>
+    <div class="card">
+      {% include "_field.html" with field=form.team %}
+      {% include "_field.html" with field=form.shared %}
+      <button class="primary">Save strat</button>
+      <a class="btn" href="{% if strat %}{{ strat.get_absolute_url }}{% else %}{% url 'strat_list' map.slug %}{% endif %}">Cancel</a>
+      {% if not strat %}<p class="muted small" style="margin-top:8px">You can draw on the radar after saving.</p>{% endif %}
+    </div>
+  </div>
+</div>
+</form>
+<datalist id="roles">{% for r in roles %}<option value="{{ r }}">{% endfor %}</datalist>
+{% endblock %}
+{% block scripts %}<script src="{% static 'js/strat_form.js' %}"></script>{% endblock %}
