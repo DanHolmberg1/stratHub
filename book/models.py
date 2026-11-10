@@ -22,6 +22,7 @@ TECHNIQUES = [
     ("stand", "Standing"),
     ("crouch", "Crouching"),
     ("jumpthrow", "Jump throw"),
+    ("w_jumpthrow", "W + jump throw"),
     ("run_jumpthrow", "Run + jump throw"),
     ("walk_jumpthrow", "Walk + jump throw"),
     ("run", "Running throw"),
